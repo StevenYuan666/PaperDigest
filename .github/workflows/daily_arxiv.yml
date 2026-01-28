@@ -1,0 +1,28 @@
+name: Daily Arxiv Paper Bot
+
+on:
+  schedule:
+    - cron: '0 13 * * *' # 每天 UTC 时间 13:00 (北京时间 21:00) 运行
+  workflow_dispatch: # 允许手动点击按钮触发测试
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install arxiv openai requests
+
+      - name: Run script
+        env:
+          THIRD_PARTY_API_KEY: ${{ secrets.THIRD_PARTY_API_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python main.py
